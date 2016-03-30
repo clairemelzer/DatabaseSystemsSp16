@@ -1,0 +1,33 @@
+
+{% extends "layout.html" %}
+{% block body %}
+
+<br><br><br>
+<h1><center>Search For Needed Help Near You</h1></center>
+
+<p><i>Please enter your zipcode.</i></p>
+<center><form action="" method="post">
+    <input type="text" placeholder="Zipcode" name="searchzip" value="{{request.form.searchzip }}">
+<input class="btn btn-default" type="submit" value="Search">
+    </form><center>
+
+{% if search == "done" %}
+<center><table border=1px solid black style="width:50%">
+    <tr>
+        <th text-align: left > Disaster Name </th>
+        <th text-align: left> Item </th>
+        <th text-align: left> Quantity </th>
+        <th text-align: left> Zipcode </th>
+    </tr>
+    {% for each in result %}
+    <tr>
+        <td text-align: left> {{ each[0] }} </td>
+        <td text-align: left> {{ each[1] }} </td>
+        <td text-align: left> {{ each[2] }} </td>
+        <td text-align: left> {{ each[3] }} </td>
+    </tr>
+    {% endfor %}
+</table></center>
+{% endif %}
+  
+{% endblock %}

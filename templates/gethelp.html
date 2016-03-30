@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div id="page">
+    
+    <p><i>Please complete the following form.</i></p>
+    <form action="" method="post">
+        <input type="text" placeholder="Item Name" name="itemname" value="{{request.form.itemname }}">
+            <input type="text" placeholder="Quantity" name="quantity" value="{{request.form.quantity }}">
+                <input type="text" placeholder="Expiration (YYYY-MM-DD)" name="expirationdate" value="{{request.form.expirationdate }}">
+                    <input type="text" placeholder="Your Zipcode" name="zipcode" value="{{request.form.zipcode }}">
+                    <select id="disaster" name="disaster">
+                    {% for each in result %}
+                    <option value="{{ each[0] }}">{{ each[0] }}</option>
+                    {% endfor %}
+                    </select>
+                    <select id="category" name="category">
+                        <option value="food">Food</option>
+                        <option value="clothing">Clothing</option>
+                        <option value="shelter">Shelter</option>
+                        <option value="medicine">Medicine</option>
+                        <option value="volunteers">Volunteers</option>
+                        <option value="transportation">Transportation</option>
+                        <option value="consumable">Everyday Consumable</option>
+                    </select>
+
+                    <input class="btn btn-default" type="submit" value="Submit Request">
+                        </form>
+    {% if error %}
+    <p class="error"><strong>Error:</strong> {{ error }}
+    {% endif %}
+
+
+{% endblock %}

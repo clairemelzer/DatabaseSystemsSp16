@@ -1,0 +1,118 @@
+
+<html>
+    <head>
+        <title>Diaster Relief</title>
+        <style type="text/css">
+            body {
+                font-size: 80%;
+                font-family: "Courier New", Courier, monospace;
+                letter-spacing: 0 em;
+                background-color: #efefef;}
+        #page {
+            max-width: 940px;
+            min-width: 1100px;
+            margin: 10px auto 10px auto;
+            padding: 20px;
+            border: 5px double #000;
+            background-color: #ffffff;}
+        #logo {
+            width: 450px;
+            margin: 10px auto 25px auto;}
+        ul {
+            width: 900px;
+            padding: 15px;
+            margin: 0px auto 0px auto;
+            border-top: 3px solid #000;
+            border-bottom: 2px solid #000;
+            text-align: center;}
+        li {
+            display: inline;
+            margin: 0px 3px;}
+        p {
+            text-align: center;
+            width: 1000px;
+            margin: 20px auto 20px auto;
+            font-weight: normal;}
+        a {
+            color: #000000;
+            text-transform: uppercase;
+            text-decoration: none;
+            width = 1
+            padding: 6px 18px 5px 18px;}
+        a:hover, a.on {
+            color: #00A0C6;
+            background-color: #ffffff;}
+    
+        
+        </style>
+        
+        <div id="logo">
+            <img src="static/diasterRelief1.png" alt="Diaster Relief" />
+        </div>
+        <ul id="navigation">
+            <li><a href="/" class="on"><img src = "static/home.png" alt ="Home Page!"> </a></li>
+            {% if current_user.is_authenticated == False %}
+            <li><a href="signup" class="on"><img src = "static/signup.png" alt ="Sign Up Today!"> </a></li>
+            {% endif %}
+            {% if current_user.is_authenticated == False %}
+            <li><a href="login" class="on"><img src = "static/login.png" alt ="Log In Now!"> </a></li>
+            {% endif %}
+            {% if current_user.is_authenticated %}
+            <li><a href="logout" class="on"><img src = "static/logout.png" alt ="Logout!"> </a></li>
+            {% endif %}
+            {% if current_user.is_authenticated %}
+                <li><a href="gethelp" class="on"><img src = "static/gethelp.png" alt ="Ask for help!"> </a></li>
+            
+                <li><a href="givehelp" class="on"><img src = "static/give.png" alt ="Give Help!"> </a></li>
+            {% endif %}
+            
+            {% if current_user.admin == 'Y' %}
+
+                <li><a href="create_disaster" class="on"><img src = "static/creatediaster.PNG" alt ="Create!"> </a></li>
+            
+            {% endif %}
+            
+            
+            {% if current_user.worker == 'Y' %}
+                <br>
+                <li><a href="requests" class="on"><img src = "static/viewallrequests.png" alt ="Ask for help!"> </a></li>
+         
+                <li><a href="responses" class="on"><img src = "static/viewallresponses.png" alt ="Responses!"> </a></li>
+           
+                <li><a href="disasters" class="on"><img src = "static/viewalldiasters.PNG" alt ="Disasters!"> </a></li>
+            
+            {% endif %}
+            
+            
+        </ul>
+    </head>
+    <body>
+        
+        {% with msgs = get_flashed_messages() %}
+          {% if msgs %}
+            {%- for msg in msgs %}
+              <center><div class="alert alert-info">
+                {{ msg }}
+              </div></center>
+            {% endfor -%}
+          {% endif %}
+        {% endwith %}
+        
+        {% if current_user.is_authenticated %}
+        <center>You are signed in as: {{ current_user.username }}</center>
+
+        {% endif %}
+        
+        
+        {% block body %}
+        
+
+        
+        {% endblock %}
+        
+        
+
+
+    </body>
+    
+</html>

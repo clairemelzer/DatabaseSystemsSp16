@@ -1,0 +1,31 @@
+
+
+{% extends "layout.html" %}
+{% block body %}
+
+<div id="page">
+    
+    <p><i>Please complete the following form.</i></p>
+    <form action="" method="post">
+        <input type="text" placeholder="Event Name" name="eventname" value="{{request.form.eventname }}">
+            <input type="text" placeholder="EventDate(YYYY-MM-DD)" name="eventdate" value="{{request.form.eventdate }}">
+                <input type="text" placeholder="Event Zipcode" name="eventzipcode" value="{{request.form.eventzipcode }}">
+                    <input type="text" placeholder="Relief Center" name="reliefcenter" value="{{request.form.reliefcenter }}">
+                        <input type="checkbox" name="food" value="food">Food<br>
+                            <input type="checkbox" name="clothing" value="clothing">Clothing <br>
+                                <input type="checkbox" name="shelter" value="shelter"> Shelter<br>
+                                    <input type="checkbox" name="medicine" value="medicine"> Medicine<br>
+                                        <input type="checkbox" name="volunteers" value="volunteers"> Volunteers<br>
+                                            <input type="checkbox" name="transportation" value="transportation"> Transportation<br>
+                                                <input type="checkbox" name="consumables" value="consumables"> Common Day To Day Consumables<br>
+                    <input class="btn btn-default" type="submit" value="Create">
+                        </form>
+    {% if error %}
+    <p class="error"><strong>Error:</strong> {{ error }}
+    {% endif %}
+    
+    
+
+
+
+{% endblock %}
