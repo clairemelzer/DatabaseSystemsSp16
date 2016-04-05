@@ -60,10 +60,13 @@ def load_user(id):
     cursor = mysql.connect().cursor()
     cursor.execute("SELECT EMAIL_ID from User where USER_ID= %d" % id)
     username = cursor.fetchone()[0]
+
     cursor.execute("SELECT ADMIN_IND from User where USER_ID= %d" % id)
     admin = cursor.fetchone()[0]
+
     cursor.execute("SELECT WORKER_IND from User where USER_ID= %d" % id)
     worker = cursor.fetchone()[0]
+
     return User(username, id, worker, admin)
 
 
@@ -73,7 +76,6 @@ def load_user(id):
 def home():
     return render_template('index.html')
 
-#login_manager.login_view = "users.login"
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -83,16 +85,24 @@ def login():
         password = request.form['password']
         cursor = mysql.connect().cursor()
         cursor.execute("SELECT PASSWORD from User where EMAIL_ID='" + username + "'")
+
         data = cursor.fetchone()
         if data is None:
             error = 'Invalid Credentials. Please try again.'
         elif bcrypt.check_password_hash(data[0], password):
             cursor.execute("SELECT USER_ID from User where EMAIL_ID='" + username + "'")
             id = cursor.fetchone()
-            cursor.execute("SELECT ADMIN_IND from User where USER_ID= %d" % id)
-            admin = cursor.fetchone()
-            cursor.execute("SELECT WORKER_IND from User where USER_ID= %d" % id)
-            worker = cursor.fetchone()
+
+            #STORED PROCEDURES
+
+            args = [id, 0]
+            result_args = cursor.callproc('find_admin', args)
+            admin = result_args[0]
+
+            args = [id, 0]
+            result_args = cursor.callproc('find_worker_ind', args)
+            worker = result_args[0]
+
             user = User(username, id, worker, admin)
             login_user(user)
             flash('Logged in successfully!')
@@ -141,9 +151,8 @@ def signup():
                     password = bcrypt.generate_password_hash(password)
                     if data is None:
                         cursor.execute("INSERT INTO User (FIRST_NAME, LAST_NAME, PASSWORD, ADDR_LN, CITY, STATE, WORKER_IND, EMAIL_ID) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')" % (firstname, lastname, password, address, city, state, workerind, username))
-                        #if validation == "123193":
-                            #cursor.execute("INSERT INTO Worker (USER_ID) VALUES (SELECT USER_ID from User where EMAIL_ID = '%s')" % (username))
-                        #end if
+                        if validation == "123193":
+                            cursor.execute("INSERT INTO Worker (USER_ID) SELECT USER_ID from User where EMAIL_ID = '%s'" % (username))
                         db.commit()
                         return redirect(url_for('login'))
                     else:
@@ -160,9 +169,10 @@ def signup():
 
 @app.route('/requests')
 def requests():
+    result = None
     db = mysql.connect()
     cursor = db.cursor()
-    #cursor.execute("SELECT DISASTER_NAME, ITEM_NAME, QUANTITY from Request")
+    cursor.execute("SELECT DISASTER_NAME, ITEM_NAME, ITEM_QUANTITY from Request")
     result = cursor.fetchall()
 
     return render_template('requests.html', result=result)
@@ -173,12 +183,44 @@ def responses():
 
 @app.route('/disasters')
 def disasters():
+    result = None
     db = mysql.connect()
     cursor = db.cursor()
-    #cursor.execute("SELECT EVENT_NAME, EVENT_ZIPCODE from EVENT")
+    cursor.execute("SELECT EVENT_NAME, ZIP_CODE, EVENT_DATE from EVENT")
     result = cursor.fetchall()
     return render_template('disasters.html', result=result)
 
+@app.route('/centers')
+def centers():
+    result = None
+    db = mysql.connect()
+    cursor = db.cursor()
+    cursor.execute("SELECT RELIEF_CNTR_NAME, ZIP_CODE from RELIEF_CENTER")
+    result = cursor.fetchall()
+    return render_template('centers.html', result=result)
+
+@app.route('/create_center', methods=['GET', 'POST'])
+def create_center():
+    error = None
+    if request.method == 'POST':
+        centername = request.form['centername']
+        centerzipcode = request.form['centerzipcode']
+
+        db = mysql.connect()
+        cursor = db.cursor()
+        
+        if len(centername) > 0:
+            if re.match(r'(\d{5})', centerzipcode):
+                centerzipcode = int(centerzipcode)
+                cursor.execute("INSERT INTO RELIEF_CENTER (RELIEF_CNTR_NAME, ZIP_CODE) VALUES ('%s', '%d')" % (centername, centerzipcode))
+                db.commit()
+                return redirect(url_for('home'))
+            else:
+                error = "Zipcode not in the right format. Date Format: YYYY-MM-DD"
+        else:
+            error = "Must enter a center name"
+    
+    return render_template('create_center.html', error=error)
 
 @app.route('/create_disaster', methods=['GET', 'POST'])
 def create_disaster():
@@ -226,9 +268,8 @@ def create_disaster():
         if len(eventname) > 0:
             if re.match(r'(\d{4}-\d{2}-\d{2})', eventdate) and re.match(r'(\d{5})', eventzipcode):
                 eventzipcode = int(eventzipcode)
-                flash(categories)
-            #                cursor.execute("INSERT INTO EVENT (EVENT_NAME, EVENT_ZIPCODE, EVENT_DATE, CATEGORIES) VALUES ('%s', '%d', '%s', '%s')" % (eventname, eventzipcode, eventdate, categories))
-            #db.commit()
+                cursor.execute("INSERT INTO EVENT (EVENT_NAME, ZIP_CODE, EVENT_DATE, CATEGORIES) VALUES ('%s', '%d', '%s', '%s')" % (eventname, eventzipcode, eventdate, categories))
+                db.commit()
                 return redirect(url_for('home'))
             else:
                 error = "Date or zipcode not in the right format. Date Format: YYYY-MM-DD"
@@ -240,12 +281,17 @@ def create_disaster():
 @app.route('/gethelp', methods=['GET', 'POST'])
 def gethelp():
     error = None
+    result = None
+    center = None
     db = mysql.connect()
     cursor = db.cursor()
-    #UPDATE
-    cursor.execute("SELECT FIRST_NAME from User")
+
+    cursor.execute("SELECT RELIEF_CNTR_NAME from RELIEF_CENTER")
+    center = cursor.fetchall()
+    cursor.execute("SELECT EVENT_NAME from EVENT")
     result = cursor.fetchall()
-    render_template('gethelp.html', error=error, result = result)
+    
+    render_template('gethelp.html', error=error, center=center, result = result)
 
     if request.method == 'POST':
         itemname = request.form['itemname']
@@ -254,23 +300,50 @@ def gethelp():
         zipcode = request.form['zipcode']
         disaster = request.form.get('disaster')
         category = request.form.get('category')
+        center = request.form.get('center')
         
-        id = current_user.get_id
+        id = current_user.id[0]
+        id = int(id)
 
+        cursor.execute("SELECT EMAIL_ID from USER where USER_ID = '%d'" % (id))
+        email = cursor.fetchone()
+        email = email[0]
 
-        if len(itemname) > 0:
-            if re.match(r'(\d{4}-\d{2}-\d{2})', expiration) and re.match(r'(\d+)', quantity) and re.match(r'(\d{5})', zipcode):
-                zipcode = int(zipcode)
-                quantity = int(quantity)
-                #cursor.execute("INSERT INTO Requests (Item_NAME, ZIPCODE, Expiration_DATE, Quantity, Disaster, category, created_date, requester_id) VALUES ('%s', '%d', '%s', '%d', '%s', '%s', CURRENT_DATE, '%d' )" % (itemname, zipcode, expiration, quantity, disaster, category, id))
-                #db.commit()
-                flash(disaster)
-                return redirect(url_for('home'))
+        cursor.execute("SELECT RELIEF_CNTR_ID from RELIEF_CENTER where RELIEF_CNTR_NAME = '%s'" % (center))
+        rc_id = cursor.fetchone()
+        rc_id = rc_id[0]
+        
+        cursor.execute("SELECT * from Request where ITEM_NAME= '%s' AND DISASTER_NAME = '%s'" % (itemname, disaster))
+        data = cursor.fetchone()
+    
+    
+        if data == None:
+        
+            if len(itemname) > 0:
+                if re.match(r'(\d{4}-\d{2}-\d{2})', expiration) and re.match(r'(\d+)', quantity) and re.match(r'(\d{5})', zipcode):
+                    zipcode = int(zipcode)
+                    quantity = int(quantity)
+                    cursor.execute("INSERT INTO Request (ITEM_NAME, ZIP_CODE, EXPIRATION_DATE, ITEM_QUANTITY, DISASTER_NAME, CATEGORY_NAME, CREATED_DATE, REQUESTOR_EMAILID, RELIEF_CNTR_ID) VALUES ('%s', '%d', '%s', '%d', '%s', '%s', CURRENT_DATE, '%s', '%d' )" % (itemname, zipcode, expiration, quantity, disaster, category, email, rc_id))
+                    db.commit()
+                    return redirect(url_for('home'))
+                else:
+                    error = "Date or quantity not in the right format. Date Format: YYYY-MM-DD. Quantity must be a number. Zipcode must be 5 digits"
             else:
-                error = "Date or quantity not in the right format. Date Format: YYYY-MM-DD. Quantity must be a number. Zipcode must be 5 digits"
+                error = "Must enter an item name"
         else:
-            error = "Must enter an item name"
-    return render_template('gethelp.html', error=error, result = result)
+            
+            cursor.execute("SELECT ITEM_QUANTITY from Request where ITEM_NAME = '%s'" % (itemname)) ##STORED PROCEDURE
+            item_quantity = cursor.fetchone()[0]
+            item_quantity = int(item_quantity)
+            quantity = int(quantity)
+            sum = quantity + item_quantity
+     
+            cursor.execute("SET SQL_SAFE_UPDATES=0")
+            cursor.execute("UPDATE Request set ITEM_QUANTITY = '%d' WHERE ITEM_NAME = '%s' AND DISASTER_NAME = '%s'" % (sum, itemname, disaster))
+            db.commit()
+            return redirect(url_for('home'))
+    
+    return render_template('gethelp.html', error=error, result = result, center = center)
 
 @app.route('/givehelp', methods=['GET', 'POST'])
 def givehelp():
@@ -278,18 +351,18 @@ def givehelp():
     result = None
     if request.method == 'POST':
         zipcode = request.form['searchzip']
-        search = "done"
+        
 
-        return render_template('givehelp.html', search=search)
-    
-    if search == "done":
         db = mysql.connect()
         cursor = db.cursor()
+        zipcode = int(zipcode)
+        
+        cursor.execute("SELECT DISASTER_NAME, ITEM_NAME, ITEM_QUANTITY, ZIP_CODE from Request WHERE ZIP_CODE = '%d'" % (zipcode))
+        result = cursor.fetchall()
+        search = "done"
 
-        #cursor.execute("SELECT EVENT_NAME, ITEM_NAME, QUANTITY, EVENT_ZIPCODE from Requests WHERE EVENT_ZIPCODE = '%s'") % (zipcode)
+    return render_template('givehelp.html', result = result, search = search)
 
-        #result = cursor.fetchall()
-    return render_template('givehelp.html', result = result)
 
 if __name__ == "__main__":
     app.run()
