@@ -47,43 +47,43 @@
         </style>
         
         <div id="logo">
-            <img src="static/diasterRelief1.png" alt="Diaster Relief" />
+            <img src="/static/diasterRelief1.png" alt="Diaster Relief" />
         </div>
         <ul id="navigation">
-            <li><a href="/" class="on"><img src = "static/home.png" alt ="Home Page!"> </a></li>
+            <li><a href="/" class="on"><img src = "/static/home.png" alt ="Home Page!"> </a></li>
             {% if current_user.is_authenticated == False %}
-            <li><a href="signup" class="on"><img src = "static/signup.png" alt ="Sign Up Today!"> </a></li>
+            <li><a href="/signup" class="on"><img src = "/static/signup.png" alt ="Sign Up Today!"> </a></li>
             {% endif %}
             {% if current_user.is_authenticated == False %}
-            <li><a href="login" class="on"><img src = "static/login.png" alt ="Log In Now!"> </a></li>
+            <li><a href="/login" class="on"><img src = "/static/login.png" alt ="Log In Now!"> </a></li>
             {% endif %}
             {% if current_user.is_authenticated %}
-            <li><a href="logout" class="on"><img src = "static/logout.png" alt ="Logout!"> </a></li>
+            <li><a href="/logout" class="on"><img src = "/static/logout.png" alt ="Logout!"> </a></li>
             {% endif %}
             {% if current_user.is_authenticated %}
-                <li><a href="gethelp" class="on"><img src = "static/gethelp.png" alt ="Ask for help!"> </a></li>
+                <li><a href="/gethelp" class="on"><img src = "/static/gethelp.png" alt ="Ask for help!"> </a></li>
             
-                <li><a href="givehelp" class="on"><img src = "static/give.png" alt ="Give Help!"> </a></li>
+                <li><a href="/givehelp" class="on"><img src = "/static/give.png" alt ="Give Help!"> </a></li>
             {% endif %}
             
             {% if current_user.admin == 'Y' %}
-
-                <li><a href="create_disaster" class="on"><img src = "static/creatediaster.PNG" alt ="Create!"> </a></li>
+                <br>
+                <li><a href="/create_disaster" class="on"><img src = "/static/creatediaster.PNG" alt ="Create!"> </a></li>
                 
-                  <li><a href="create_center" class="on"><img src = "static/creatediaster.PNG" alt ="Create!"> </a></li>
+                  <li><a href="/create_center" class="on"><img src = "/static/creatediaster.PNG" alt ="Create!"> </a></li>
             
             {% endif %}
             
             
             {% if current_user.worker == 'Y' %}
                 <br>
-                <li><a href="requests" class="on"><img src = "static/viewallrequests.png" alt ="Ask for help!"> </a></li>
+                <li><a href="/requests" class="on"><img src = "/static/viewallrequests.png" alt ="Ask for help!"> </a></li>
          
-                <li><a href="responses" class="on"><img src = "static/viewallresponses.png" alt ="Responses!"> </a></li>
+                <li><a href="/responses" class="on"><img src = "/static/viewallresponses.png" alt ="Responses!"> </a></li>
            
-                <li><a href="disasters" class="on"><img src = "static/viewalldiasters.PNG" alt ="Disasters!"> </a></li>
+                <li><a href="/disasters" class="on"><img src = "/static/viewalldiasters.PNG" alt ="Disasters!"> </a></li>
                 
-                 <li><a href="centers" class="on"><img src = "static/viewalldiasters.PNG" alt ="Centers!"> </a></li>
+                 <li><a href="/centers" class="on"><img src = "/static/viewalldiasters.PNG" alt ="Centers!"> </a></li>
             
             {% endif %}
             

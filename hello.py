@@ -154,6 +154,7 @@ def signup():
                         if validation == "123193":
                             cursor.execute("INSERT INTO Worker (USER_ID) SELECT USER_ID from User where EMAIL_ID = '%s'" % (username))
                         db.commit()
+                        flash('Signed Up successfully!')
                         return redirect(url_for('login'))
                     else:
                         error = 'User with that email alaready exists or you left it blank.. Please try again.'
@@ -172,14 +173,20 @@ def requests():
     result = None
     db = mysql.connect()
     cursor = db.cursor()
-    cursor.execute("SELECT DISASTER_NAME, ITEM_NAME, ITEM_QUANTITY from Request")
+    cursor.execute("SELECT DISASTER_NAME, ITEM_NAME, ITEM_QUANTITY, REQUESTOR_EMAILID from Request")
     result = cursor.fetchall()
 
     return render_template('requests.html', result=result)
 
 @app.route('/responses')
 def responses():
-    return render_template('responses.html')
+    result = None
+    db = mysql.connect()
+    cursor = db.cursor()
+    cursor.execute("SELECT DISASTER_NAME, ITEM_NAME, ITEM_QUANTITY, RESPONDER_ID from Request WHERE RESPONSE_ID IS NOT NULL")
+    result = cursor.fetchall()
+
+    return render_template('responses.html', result = result)
 
 @app.route('/disasters')
 def disasters():
@@ -214,6 +221,7 @@ def create_center():
                 centerzipcode = int(centerzipcode)
                 cursor.execute("INSERT INTO RELIEF_CENTER (RELIEF_CNTR_NAME, ZIP_CODE) VALUES ('%s', '%d')" % (centername, centerzipcode))
                 db.commit()
+                flash('Created Center successfully!')
                 return redirect(url_for('home'))
             else:
                 error = "Zipcode not in the right format. Date Format: YYYY-MM-DD"
@@ -270,6 +278,7 @@ def create_disaster():
                 eventzipcode = int(eventzipcode)
                 cursor.execute("INSERT INTO EVENT (EVENT_NAME, ZIP_CODE, EVENT_DATE, CATEGORIES) VALUES ('%s', '%d', '%s', '%s')" % (eventname, eventzipcode, eventdate, categories))
                 db.commit()
+                flash('Created Disaster successfully!')
                 return redirect(url_for('home'))
             else:
                 error = "Date or zipcode not in the right format. Date Format: YYYY-MM-DD"
@@ -325,6 +334,7 @@ def gethelp():
                     quantity = int(quantity)
                     cursor.execute("INSERT INTO Request (ITEM_NAME, ZIP_CODE, EXPIRATION_DATE, ITEM_QUANTITY, DISASTER_NAME, CATEGORY_NAME, CREATED_DATE, REQUESTOR_EMAILID, RELIEF_CNTR_ID) VALUES ('%s', '%d', '%s', '%d', '%s', '%s', CURRENT_DATE, '%s', '%d' )" % (itemname, zipcode, expiration, quantity, disaster, category, email, rc_id))
                     db.commit()
+                    flash('Request Submitted!')
                     return redirect(url_for('home'))
                 else:
                     error = "Date or quantity not in the right format. Date Format: YYYY-MM-DD. Quantity must be a number. Zipcode must be 5 digits"
@@ -332,7 +342,7 @@ def gethelp():
                 error = "Must enter an item name"
         else:
             
-            cursor.execute("SELECT ITEM_QUANTITY from Request where ITEM_NAME = '%s'" % (itemname)) ##STORED PROCEDURE
+            cursor.execute("SELECT ITEM_QUANTITY from Request where ITEM_NAME = '%s'" % (itemname))
             item_quantity = cursor.fetchone()[0]
             item_quantity = int(item_quantity)
             quantity = int(quantity)
@@ -341,6 +351,7 @@ def gethelp():
             cursor.execute("SET SQL_SAFE_UPDATES=0")
             cursor.execute("UPDATE Request set ITEM_QUANTITY = '%d' WHERE ITEM_NAME = '%s' AND DISASTER_NAME = '%s'" % (sum, itemname, disaster))
             db.commit()
+            flash('Requested item already exists, added your quantity to the quantity already requested!')
             return redirect(url_for('home'))
     
     return render_template('gethelp.html', error=error, result = result, center = center)
@@ -362,6 +373,48 @@ def givehelp():
         search = "done"
 
     return render_template('givehelp.html', result = result, search = search)
+
+@app.route('/respond/<requestid>', methods=['GET', 'POST'])
+def response(requestid):
+    error = None
+    db = mysql.connect()
+    cursor = db.cursor()
+    requestid = int(requestid)
+    cursor.execute("SELECT ITEM_NAME from Request WHERE REQUEST_ID = '%d'" % (requestid))
+    request_item = cursor.fetchall()
+    request_item = request_item[0]
+    
+    cursor.execute("SELECT DISASTER_NAME from Request WHERE REQUEST_ID = '%d'" % (requestid))
+    disaster = cursor.fetchall()
+    disaster = disaster[0]
+    
+    cursor.execute("SELECT ITEM_QUANTITY from Request WHERE REQUEST_ID = '%d'" % (requestid))
+    it_quant = cursor.fetchall()
+    it_quant = it_quant[0]
+    
+    
+    if request.method == 'POST':
+        quantity = request.form['quantity']
+        quantity = int(quantity)
+        it_quant = int(it_quant[0])
+        if quantity <= it_quant:
+            
+            id = current_user.id[0]
+            id = int(id)
+            
+            updated_quant = it_quant - quantity
+            cursor.execute("SET SQL_SAFE_UPDATES=0")
+            cursor.execute("UPDATE Request set ITEM_QUANTITY = '%d' WHERE REQUEST_ID = '%d'" % (updated_quant, requestid))
+            db.commit()
+          
+            cursor.execute("INSERT INTO Response (ITEM_NAME, DISASTER_NAME, ITEM_QUANTITY, REQUEST_ID, RESP_USER_ID, RESP_CREATED_DT) VALUES ('%s', '%s', '%d', '%d', '%d', CURRENT_DATE)" % (request_item[0], disaster[0], quantity, requestid, id))
+            db.commit()
+            flash('Your Response was Recieved!')
+            return redirect(url_for('home'))
+    
+    
+    
+    return render_template('respond.html', request_item = request_item, error = error, disaster = disaster, it_quant = it_quant)
 
 
 if __name__ == "__main__":

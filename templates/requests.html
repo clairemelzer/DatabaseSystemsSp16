@@ -8,12 +8,14 @@
         <th text-align: left > Disaster Name </th>
         <th text-align: left> Item </th>
         <th text-align: left> Quantity </th>
+        <th text-align: left> Requester Email </th>
     </tr>
     {% for each in result %}
     <tr>
         <td text-align: left > {{ each[0] }} </td>
         <td text-align: left> {{ each[1] }} </td>
         <td text-align: left> {{ each[2] }} </td>
+        <td text-align: left> {{ each[3] }} </td>
     </tr>
     {% endfor %}
 </table></center>
