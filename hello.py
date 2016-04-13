@@ -183,7 +183,7 @@ def responses():
     result = None
     db = mysql.connect()
     cursor = db.cursor()
-    cursor.execute("SELECT DISASTER_NAME, ITEM_NAME, ITEM_QUANTITY, RESPONDER_ID from Request WHERE RESPONSE_ID IS NOT NULL")
+    cursor.execute("SELECT ITEM_NAME, DISASTER_NAME, ITEM_QUANTITY, REQUEST_ID, RESP_USER_ID from Response")
     result = cursor.fetchall()
 
     return render_template('responses.html', result = result)
@@ -360,19 +360,33 @@ def gethelp():
 def givehelp():
     search = ""
     result = None
+    error = None
     if request.method == 'POST':
         zipcode = request.form['searchzip']
+        name = request.form['searchitem']
+        
+
         
 
         db = mysql.connect()
         cursor = db.cursor()
-        zipcode = int(zipcode)
         
-        cursor.execute("SELECT DISASTER_NAME, ITEM_NAME, ITEM_QUANTITY, ZIP_CODE from Request WHERE ZIP_CODE = '%d'" % (zipcode))
-        result = cursor.fetchall()
+        if zipcode != '':
+            zipcode = int(zipcode)
+            cursor.execute("SELECT DISASTER_NAME, ITEM_NAME, ITEM_QUANTITY, ZIP_CODE, REQUEST_ID from Request WHERE ZIP_CODE = '%d'" % (zipcode))
+            result = cursor.fetchall()
+        
+        if name != '':
+            cursor.execute("SELECT DISASTER_NAME, ITEM_NAME, ITEM_QUANTITY, ZIP_CODE, REQUEST_ID from Request WHERE ITEM_NAME = '%s'" % (name))
+            result = cursor.fetchall()
+        
+        if result is None:
+            error = "No requests match your search parameters"
+
+
         search = "done"
 
-    return render_template('givehelp.html', result = result, search = search)
+    return render_template('givehelp.html', result = result, search = search, error = error)
 
 @app.route('/respond/<requestid>', methods=['GET', 'POST'])
 def response(requestid):
@@ -406,6 +420,7 @@ def response(requestid):
             cursor.execute("SET SQL_SAFE_UPDATES=0")
             cursor.execute("UPDATE Request set ITEM_QUANTITY = '%d' WHERE REQUEST_ID = '%d'" % (updated_quant, requestid))
             db.commit()
+         
           
             cursor.execute("INSERT INTO Response (ITEM_NAME, DISASTER_NAME, ITEM_QUANTITY, REQUEST_ID, RESP_USER_ID, RESP_CREATED_DT) VALUES ('%s', '%s', '%d', '%d', '%d', CURRENT_DATE)" % (request_item[0], disaster[0], quantity, requestid, id))
             db.commit()
@@ -414,8 +429,34 @@ def response(requestid):
     
     
     
-    return render_template('respond.html', request_item = request_item, error = error, disaster = disaster, it_quant = it_quant)
+    return render_template('respond.html', request_item = request_item, error = error, disaster = disaster, it_quant = it_quant, requestid =requestid)
 
+@app.route('/assign', methods=['GET', 'POST'])
+def assign():
+    error = None
+    result = None
+    center = None
+    db = mysql.connect()
+    cursor = db.cursor()
+    
+    cursor.execute("SELECT EVENT_NAME from EVENT")
+    disaster = cursor.fetchall()
+    cursor.execute("SELECT WORKER_ID from WORKER")
+    worker = cursor.fetchall()
+    
+    render_template('assign.html', error=error, worker=worker, disaster = disaster)
+
+    if request.method == 'POST':
+        disaster = request.form.get('disaster')
+        worker = request.form.get('worker')
+        
+        worker = int(worker)
+        cursor.execute("SET SQL_SAFE_UPDATES=0")
+        cursor.execute("UPDATE Worker set CURR_ASSIGNMENT = '%s' WHERE WORKER_ID = '%d'" % (disaster, worker))
+        db.commit()
+        flash('Worker Assigned!')
+        return redirect(url_for('home'))
+    return render_template('assign.html', error=error, worker=worker, disaster = disaster)
 
 if __name__ == "__main__":
     app.run()

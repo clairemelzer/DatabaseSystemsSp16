@@ -6,10 +6,11 @@
 <h1><center>All Responses</h1></center>
 <center><table border=1px solid black style="width:50%">
     <tr>
-        <th text-align: left > Disaster Name </th>
-        <th text-align: left> Item </th>
+        <th text-align: left > Item </th>
+        <th text-align: left> Disaster </th>
         <th text-align: left> Quantity </th>
-        <th text-align: left> Responder Email </th>
+        <th text-align: left> Request ID </th>
+        <th text-align: left> Responser Email </th>
     </tr>
     {% for each in result %}
     <tr>
@@ -17,6 +18,7 @@
         <td text-align: left> {{ each[1] }} </td>
         <td text-align: left> {{ each[2] }} </td>
         <td text-align: left> {{ each[3] }} </td>
+        <td text-align: left> {{ each[4] }} </td>
     </tr>
     {% endfor %}
 </table></center>

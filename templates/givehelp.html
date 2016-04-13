@@ -5,19 +5,38 @@
 <br><br><br>
 <h1><center>Search For Needed Help Near You</h1></center>
 
-<p><i>Please enter your zipcode.</i></p>
-<center><form action="" method="post">
-    <input type="text" placeholder="Zipcode" name="searchzip" value="{{request.form.searchzip }}">
-<input class="btn btn-default" type="submit" value="Search">
+<p><i>Please choose a parameter to search by.</i></p>
+
+
+<center>
+    
+    <select id="search_type" name="search_type" style="display:" onchange="javascript:newSearchType();">
+        <option value="choose">Choose Option..</option>
+        <option value="zipcode">Zipcode</option>
+        <option value="item">Item Name</option>
+    </select>
+    
+    <form action="" method="post">
+    <input type="text" placeholder="Zipcode" name="searchzip" id="searchzip" style="display:none" value="{{request.form.searchzip }}">
+        <input type="text" placeholder="Item Name" name="searchitem" id="searchitem" style="display:none" value="{{request.form.searchitem }}">
+<input class="btn btn-default" type="submit" value="Search" id="search" onclick="javascript:hide();">
     </form><center>
+        
+{% if error %}
+<p class="error"><strong>Error:</strong> {{ error }}
+{% endif %}
 
 {% if search == "done" %}
+
+
+
 <center><table border=1px solid black style="width:50%">
     <tr>
         <th text-align: left > Disaster Name </th>
         <th text-align: left> Item </th>
-        <th text-align: left> Quantity </th>
+        <th text-align: left> Quantity Needed</th>
         <th text-align: left> Zipcode </th>
+        <th text-align: left> Donate </th>
     </tr>
     {% for each in result %}
     <tr>
@@ -25,9 +44,39 @@
         <td text-align: left> {{ each[1] }} </td>
         <td text-align: left> {{ each[2] }} </td>
         <td text-align: left> {{ each[3] }} </td>
+        <td text-align: center> <a href="{{ url_for('response', requestid=each[4]) }}"> Respond!</a>  </td>
     </tr>
     {% endfor %}
 </table></center>
 {% endif %}
-  
+
+<script>
+    var ddl = document.getElementById("search_type");
+    ddl.onchange=newSearchType;
+    function newSearchType()
+    {
+        var ddl = document.getElementById("search_type");
+        var selectedValue = ddl.options[ddl.selectedIndex].value;
+        
+        if (selectedValue == "zipcode")
+        {   document.getElementById("searchzip").style.display = "";
+             document.getElementById("searchitem").style.display = "none";
+        }
+        else if (selectedValue == "item")
+        {
+            document.getElementById("searchitem").style.display = "";
+            document.getElementById("searchzip").style.display = "none";
+        }
+        document.getElementById("search_type").style.display = "none";
+    }
+
+    var ddl2 = document.getElementById("search");
+    ddl2.onclick=hide;
+    function hide()
+    {
+        var ddl2 = document.getElementById("search");
+        document.getElementById("search_type").style.display = "none";
+    }
+</script>
+
 {% endblock %}

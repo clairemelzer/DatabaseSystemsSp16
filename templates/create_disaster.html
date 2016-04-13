@@ -4,13 +4,13 @@
 {% block body %}
 
 <div id="page">
-    
+    <center>
     <p><i>Please complete the following form.</i></p>
     <form action="" method="post">
         <input type="text" placeholder="Event Name" name="eventname" value="{{request.form.eventname }}">
             <input type="text" placeholder="EventDate(YYYY-MM-DD)" name="eventdate" value="{{request.form.eventdate }}">
                 <input type="text" placeholder="Event Zipcode" name="eventzipcode" value="{{request.form.eventzipcode }}">
-                    <input type="checkbox" name="food" value="food">Food<br>
+                    <br><input type="checkbox" name="food" value="food">Food<br>
                         <input type="checkbox" name="clothing" value="clothing">Clothing <br>
                             <input type="checkbox" name="shelter" value="shelter"> Shelter<br>
                                 <input type="checkbox" name="medicine" value="medicine"> Medicine<br>

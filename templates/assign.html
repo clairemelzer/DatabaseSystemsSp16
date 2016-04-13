@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div id="page">
+    <center>
+    <p><i>Please assign a worker to a relief center.</i></p>
+    <form action="" method="post">
+    Disaster Name:
+                   <select id="disaster" name="disaster">
+                       {% for each in disaster %}
+                       <option value="{{ each[0] }}">{{ each[0] }}</option>
+                       {% endfor %}
+                   </select>
+    Worker Id:
+                    <select id="" name="worker">
+                    {% for each in worker %}
+                    <option value="{{ each[0] }}">{{ each[0] }}</option>
+                    {% endfor %}
+                    </select>
+
+                    <input class="btn btn-default" type="submit" value="Submit Request">
+                        </form>
+    {% if error %}
+    <p class="error"><strong>Error:</strong> {{ error }}
+    {% endif %}
+
+
+{% endblock %}
