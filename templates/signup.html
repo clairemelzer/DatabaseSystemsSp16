@@ -1,14 +1,15 @@
 
 {% extends "layout.html" %}
 {% block body %}
-            
+     <center>
+         <h1>Sign Up For An Account</h1>
     <div id="page">
-        
+        <div class="styled-select">
         <select id="user_type" name="user_type" onchange="javascript:newUserType();">
             <option value="user">Regular User</option>
             <option value="worker">Worker</option>
-        </select>
-        
+        </select></div><br>
+        <center>
         <p><i>Please complete the following form. Mandatory fields are marked with a </i><em>*</em></p>
         <form action="" method="post">
             <input type="text" placeholder="First Name" name="firstname" value="{{
@@ -24,8 +25,8 @@
                                 <input type="text" placeholder="State" name="state" value="{{
                                     request.form.state }}">
                                     <input type="password" placeholder="Password" name="password" value="{{request.form.password }}">
-                                        <input type="password" placeholder="Worker Validation Code" name="workercode" id="workercode" style="display:none" value="{{request.form.workercode }}">
-                                            <input class="btn btn-default" type="submit" value="Sign Up">
+                                        <input type="password" placeholder="Worker Validation Code" name="workercode" id="workercode" style="display:none" value="{{request.form.workercode }}"><br>
+                                            <input class="button" type="submit" value="Sign Up">
                                                 </form>
         {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}

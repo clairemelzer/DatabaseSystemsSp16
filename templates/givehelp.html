@@ -2,7 +2,7 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<br><br><br>
+
 <h1><center>Search For Needed Help Near You</h1></center>
 
 <p><i>Please choose a parameter to search by.</i></p>
@@ -10,16 +10,18 @@
 
 <center>
     
-    <select id="search_type" name="search_type" style="display:" onchange="javascript:newSearchType();">
+    <input id="clickMe" class="button" type="button" value="Click to Search for Help" style="display:" onclick="javascript:hide();" />
+    
+    <select id="search_type" name="search_type" style="display:none" class="styled-select" onchange="javascript:newSearchType();">
         <option value="choose">Choose Option..</option>
         <option value="zipcode">Zipcode</option>
         <option value="item">Item Name</option>
-    </select>
+    </select><br>
     
     <form action="" method="post">
     <input type="text" placeholder="Zipcode" name="searchzip" id="searchzip" style="display:none" value="{{request.form.searchzip }}">
-        <input type="text" placeholder="Item Name" name="searchitem" id="searchitem" style="display:none" value="{{request.form.searchitem }}">
-<input class="btn btn-default" type="submit" value="Search" id="search" onclick="javascript:hide();">
+        <input type="text" placeholder="Item Name" name="searchitem" id="searchitem" style="display:none" value="{{request.form.searchitem }}"><br>
+<input class="button" type="submit" value="Search" style="display:none" id="search">
     </form><center>
         
 {% if error %}
@@ -70,12 +72,14 @@
         document.getElementById("search_type").style.display = "none";
     }
 
-    var ddl2 = document.getElementById("search");
+    var ddl2 = document.getElementById("clickMe");
     ddl2.onclick=hide;
     function hide()
     {
         var ddl2 = document.getElementById("search");
-        document.getElementById("search_type").style.display = "none";
+        document.getElementById("search_type").style.display = "";
+        document.getElementById("search").style.display = "";
+        document.getElementById("clickMe").style.display = "none";
     }
 </script>
 

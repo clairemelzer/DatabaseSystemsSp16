@@ -1,16 +1,16 @@
 
 
 {% extends "layout.html" %}
-{% block body %}
-<br><br>
+{% block body %}<center>
+<h1>Respond to Request</h1>
 <p><i>Please complete the following form to respond to the request.</i></p>
 <p>Item you are responding to: {{ request_item[0] }}</p>
 <p>For disaster: {{ disaster[0] }}</p>
 <p>Quantity Needed: {{ it_quant[0] }}</p>
 
 <center><form action="" method="post">
-    <input type="text" placeholder="Quantity Supplying" name="quantity" value="{{request.form.quantity }}">
-        <input class="btn btn-default" type="submit" value="Give Help">
+    <input type="text" placeholder="Quantity Supplying" name="quantity" value="{{request.form.quantity }}"><br>
+        <input class="button" type="submit" value="Give Help">
                 </form>
 {% if error %}
 <p class="error"><strong>Error:</strong> {{ error }}

@@ -4,8 +4,8 @@
         <title>Diaster Relief</title>
         <style type="text/css">
             body {
-                font-size: 80%;
-                font-family: "Courier New", Courier, monospace;
+                font-size: 100%;
+                font-family: Helvetica, Arial, sans-serif;
                 letter-spacing: 0 em;
                 background-color: #efefef;}
         #page {
@@ -37,54 +37,136 @@
             color: #000000;
             text-transform: uppercase;
             text-decoration: none;
-            width = 1
+            width = 0
             padding: 6px 18px 5px 18px;}
         a:hover, a.on {
             color: #00A0C6;
             background-color: #ffffff;}
+        
+        table {
+            color: #333;
+            font-family: Helvetica, Arial, sans-serif;
+            width: 640px;
+            border-collapse:
+            collapse; border-spacing: 0;
+        }
+        
+        td, th {
+            border: 1px solid transparent; /* No more visible border */
+            height: 30px;
+            transition: all 0.3s;  /* Simple transition for hover effect */
+        }
+        
+        th {
+            background: #DFDFDF;  /* Darken header a bit */
+            font-weight: bold;
+        }
+        
+        td {
+            background: #FAFAFA;
+            text-align: center;
+        }
+        /* Cells in even rows (2,4,6...) are one color */
+        tr:nth-child(even) td { background: #F1F1F1; }
+        
+        /* Cells in odd rows (1,3,5...) are another (excludes header cells)  */
+        tr:nth-child(odd) td { background: #FEFEFE; }
+        
+        tr td:hover { background: #666; color: #FFF; } /* Hover cell effect! */
+        
+        .styled-select select {
+            background: transparent;
+            width: 268px;
+            padding: 5px;
+            font-size: 14px;
+            line-height: 1;
+            border: 1;
+            border-radius: 0;
+            height: 34px;
+            -webkit-appearance: none;
+        }
+        
+        .styled-select {
+            width: 240px;
+            height: 34px;
+            overflow: hidden;
+            background: url('/static/new_arrow.jpg') no-repeat right #ddd;
+            border: 1px solid #ccc;
+        }
+        
+        .button {
+            background-color:rgb(128,128,128);
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        
+        input[type=text] {
+            width: 25%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+        
+        input[type=password] {
+            width: 25%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+
+        
     
         
         </style>
         
+        
+        
         <div id="logo">
-            <img src="/static/diasterRelief1.png" alt="Diaster Relief" />
+            <img src="/static/Diasasterrelief.PNG" alt="Diaster Relief" />
         </div>
         <ul id="navigation">
-            <li><a href="/" class="on"><img src = "/static/home.png" alt ="Home Page!"> </a></li>
+            <li><a href="/"><img src = "/static/home.PNG" > </a></li>
             {% if current_user.is_authenticated == False %}
-            <li><a href="/signup" class="on"><img src = "/static/signup.png" alt ="Sign Up Today!"> </a></li>
+            <li><a href="/signup"><img src = "/static/signup.PNG" > </a></li>
             {% endif %}
             {% if current_user.is_authenticated == False %}
-            <li><a href="/login" class="on"><img src = "/static/login.png" alt ="Log In Now!"> </a></li>
+            <li><a href="/login"><img src = "/static/login.PNG" > </a></li>
             {% endif %}
             {% if current_user.is_authenticated %}
-            <li><a href="/logout" class="on"><img src = "/static/logout.png" alt ="Logout!"> </a></li>
+            <li><a href="/logout" ><img src = "/static/logout.PNG" > </a></li>
             {% endif %}
             {% if current_user.is_authenticated %}
-                <li><a href="/gethelp" class="on"><img src = "/static/gethelp.png" alt ="Ask for help!"> </a></li>
+                <li><a href="/gethelp" ><img src = "/static/gethelp.PNG" > </a></li>
             
-                <li><a href="/givehelp" class="on"><img src = "/static/give.png" alt ="Give Help!"> </a></li>
+                <li><a href="/givehelp" ><img src = "/static/give.PNG" > </a></li>
             {% endif %}
             
             {% if current_user.admin == 'Y' %}
                 <br>
-                <li><a href="/create_disaster" class="on"><img src = "/static/creatediaster.PNG" alt ="Create!"> </a></li>
+                <li><a href="/create_disaster" ><img src = "/static/createdisaster.PNG"> </a></li>
                 
-                  <li><a href="/create_center" > Create Center! </a></li>
-                  <li><a href="/assign"> Assign Worker!  </a></li>
+                  <li><a href="/create_center" ><img src = "/static/createreliefcenter.PNG"> </a></li>
+                  <li><a href="/assign"> <img src = "/static/assignworkers.PNG">  </a></li>
             
             {% endif %}
             
             
             {% if current_user.worker == 'Y' %}
                 <br>
-                <li><a href="/requests" class="on"><img src = "/static/viewallrequests.png" alt ="Ask for help!"> </a></li>
+                <li><a href="/requests" ><img src = "/static/viewallrequests.PNG" > </a></li>
          
-                <li><a href="/responses" class="on"><img src = "/static/viewallresponses.png" alt ="Responses!"> </a></li>
+                <li><a href="/responses" ><img src = "/static/viewallresponses.PNG" > </a></li>
            
-                <li><a href="/disasters" class="on"><img src = "/static/viewalldiasters.PNG" alt ="Disasters!"> </a></li>
+                <li><a href="/disasters" ><img src = "/static/viewalldisasters.PNG"> </a></li>
                 
-                 <li><a href="/centers" class="on"><img src = "/static/viewalldiasters.PNG" alt ="Centers!"> </a></li>
+                 <li><a href="/centers" > <img src = "/static/viewallreliefcenters.PNG"> </a></li>
             
             {% endif %}
             

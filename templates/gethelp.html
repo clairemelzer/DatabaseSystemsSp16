@@ -2,25 +2,30 @@
 {% block body %}
 
 <div id="page">
-    <cneter>
+    <center>
+        <h1>Get Help</h1>
     <p><i>Please complete the following form.</i></p>
     <form action="" method="post">
-        <input type="text" placeholder="Item Name" name="itemname" value="{{request.form.itemname }}">
-            <input type="text" placeholder="Quantity" name="quantity" value="{{request.form.quantity }}">
-                <input type="text" placeholder="Expiration (YYYY-MM-DD)" name="expirationdate" value="{{request.form.expirationdate }}">
-                    <input type="text" placeholder="Your Zipcode" name="zipcode" value="{{request.form.zipcode }}">
-                   
+        Include Unit with item name. (I.E.: Water Bottles)<br>
+        <input type="text" placeholder="Item Name" name="itemname" value="{{request.form.itemname }}"><br>
+            <input type="text" placeholder="Quantity" name="quantity" value="{{request.form.quantity }}"><br>
+                <input type="text" placeholder="Expiration (YYYY-MM-DD)" name="expirationdate" value="{{request.form.expirationdate }}"><br>
+                    <input type="text" placeholder="Your Zipcode" name="zipcode" value="{{request.form.zipcode }}"><br>
+                   <br>
+                   <div class="styled-select">
                    <select id="disaster" name="disaster">
-                       {% for each in result %}
-                       <option value="{{ each[0] }}">{{ each[0] }}</option>
+                       {% for each in disas %}
+                       <option value="{{ each[0] }}">{{ each[0] }} - {{ each[1] }}</option>
                        {% endfor %}
-                   </select>
+                   </select><br><br></div><br>
+                   <div class="styled-select">
                     <select id="center" name="center">
-                    {% for each in center %}
-                    <option value="{{ each[0] }}">{{ each[0] }}</option>
+                    {% for each in center1 %}
+                    <option value="{{ each[0] }}">{{ each[0] }} - {{ each[1] }}</option>
                     {% endfor %}
-                    </select>
-                    
+                    </select><br>><br></div>
+                   <br>
+                    <div class="styled-select">
                     <select id="category" name="category">
                         <option value="food">Food</option>
                         <option value="clothing">Clothing</option>
@@ -29,9 +34,9 @@
                         <option value="volunteers">Volunteers</option>
                         <option value="transportation">Transportation</option>
                         <option value="consumable">Everyday Consumable</option>
-                    </select>
-
-                    <input class="btn btn-default" type="submit" value="Submit Request">
+                    </select><br></label><br></div>
+<br>
+                    <input class="button" type="submit" value="Submit Request">
                         </form>
     {% if error %}
     <p class="error"><strong>Error:</strong> {{ error }}

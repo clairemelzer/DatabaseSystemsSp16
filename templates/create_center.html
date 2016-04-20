@@ -5,13 +5,20 @@
 
 <div id="page">
     <center>
+        <h1>Create Center</h1>
     <p><i>Please complete the following form to create a new relief center.</i></p>
     <form action="" method="post">
         <input type="text" placeholder="Center Name" name="centername" value="{{request.form.eventname }}">
 
                 <input type="text" placeholder="Center Zipcode" name="centerzipcode" value="{{request.form.eventzipcode }}">
-                    
-                    <input class="btn btn-default" type="submit" value="Create">
+                    <br>
+                    <div class="styled-select">
+                        <select id="disaster" name="disaster">
+                            {% for each in disasters %}
+                            <option value="{{ each[0] }}">{{ each[0] }} : {{ each[1] }}</option>
+                            {% endfor %}
+                        </select></div><br>
+                    <input class="button" type="submit" value="Create">
                         </form>
     {% if error %}
     <p class="error"><strong>Error:</strong> {{ error }}

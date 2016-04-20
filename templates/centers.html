@@ -2,18 +2,20 @@
 
 {% extends "layout.html" %}
 {% block body %}
-<br><br><br>
+
 <h1><center>All Relief Centers</h1></center>
 <center><table border=1px solid black style="width:50%">
     <tr>
         <th text-align: left > Center Name </th>
         <th text-align: left> Center Zipcode </th>
+        <th text-align: left> Delete Center </th>
    
     </tr>
     {% for each in result %}
     <tr>
         <td text-align: left > {{ each[0] }} </td>
         <td text-align: left> {{ each[1] }} </td>
+        <td text-align: left><a href="{{ url_for('delete_relief_center', reliefcenterid=each[2]) }}"> Delete This entry</a> </td>
     
     </tr>
     {% endfor %}

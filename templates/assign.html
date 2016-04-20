@@ -2,23 +2,25 @@
 {% block body %}
 
 <div id="page">
-    <center>
+    <center><h1>Assign Worker</h1>
     <p><i>Please assign a worker to a relief center.</i></p>
     <form action="" method="post">
-    Disaster Name:
+    Relief Center Name:
+                    <div class="styled-select">
                    <select id="disaster" name="disaster">
                        {% for each in disaster %}
                        <option value="{{ each[0] }}">{{ each[0] }}</option>
                        {% endfor %}
-                   </select>
-    Worker Id:
+                   </select></div><br>
+    Worker Email Id:
+                     <div class="styled-select">
                     <select id="" name="worker">
-                    {% for each in worker %}
+                    {% for each in emails %}
                     <option value="{{ each[0] }}">{{ each[0] }}</option>
                     {% endfor %}
-                    </select>
-
-                    <input class="btn btn-default" type="submit" value="Submit Request">
+                    </select></div>
+<br>
+                    <input class="button" type="submit" value="Submit Request">
                         </form>
     {% if error %}
     <p class="error"><strong>Error:</strong> {{ error }}
